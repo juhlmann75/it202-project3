@@ -88,22 +88,26 @@
     
     var firstColState = false;
     var secondColState = false;
-    
+    var speedUp = 0;
     function draw() {
         
         var firstCol = colliding(state, circle1);
         if(firstCol == true){
             lives -= 1;
             circle1.x = width-100;
-            circle1.y = 100;
+            circle1.y = Math.floor(Math.random() * height);
+            
+            
         }
         
         var secondCol = colliding(state, circle2);
         
         if(secondCol == true){
+           
             score += 1;
             circle2.x = width - 100;
-            circle2.y = 70;
+            circle2.y = Math.floor(Math.random() * height);
+            speedUp += 2;
         }
         
         ctx.clearRect(0, 0, width, height)
@@ -113,10 +117,11 @@
         ctx.stroke();
         ctx.fillStyle = circle1.color;
         ctx.fill();
-        circle1.x-= 10;
+        circle1.x-= 10 + speedUp;
 
         if(circle1.x < 0){
             circle1.x = width-100;
+            circle1.y = Math.floor(Math.random() * height);
         }
         
         
@@ -126,10 +131,12 @@
         ctx.stroke();
         ctx.fillStyle = circle2.color;
         ctx.fill();
-        circle2.x-= 5;
+        circle2.x-= 5 + speedUp;
 
         if(circle2.x < 0){
             circle2.x = width-100;
+            circle2.y = Math.floor(Math.random() * height);
+            speedUp += 2;
         }
 
         ctx.beginPath();
@@ -150,7 +157,14 @@
       ctx.fillText("Lives: " + lives,10,100);
 
       lastRender = timestamp
-      window.requestAnimationFrame(loop)
+       
+      if(lives == 0){
+          console.log("dead");
+      }
+      else{
+         window.requestAnimationFrame(loop) 
+      }
+      
     }
     var lastRender = 0
     window.requestAnimationFrame(loop)
