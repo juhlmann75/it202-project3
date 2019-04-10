@@ -1,5 +1,198 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+            }
+
+            canvas {
+              background: #000;
+              height: 100%;
+              width: 100%;
+              display: block
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="1496" height="488" />
+    </body>
+</html>
+
+
+<script>
+    var canvas = document.getElementById("canvas")
+    var ctx = canvas.getContext("2d")
+    var lives = 3;
+    var score = 0;
+    var width
+    var height
+
+    var resize = function() {
+      width = window.innerWidth * 2
+      height = window.innerHeight * 2
+      canvas.width = width
+      canvas.height = height
+    }
+    window.onresize = resize
+    resize()
+
+    var game = {score:0, lives:3, state: "play"};
+    var circle1 = {x:(width-100), y:(70), r:50, color:"red"};
+    var circle2 = {x:(width-100), y:(100), r:50, color:"purple"};
+
+    var player = {x:100, y:70, r:50, color:"yellow"};
+
+    ctx.fillStyle = 'red'
+
+    var state = {
+      x: 100,
+      y: (height / 2),
+      pressedKeys: {
+        left: false,
+        right: false,
+        up: false,
+        down: false
+      },
+      r: 50
+    }
+
+    function update(progress) {
+    /*  if (state.pressedKeys.left) {
+        state.x -= progress
+      }
+      if (state.pressedKeys.right) {
+        state.x += progress
+      }*/
+      if (state.pressedKeys.up) {
+        state.y -= progress
+      }
+      if (state.pressedKeys.down) {
+        state.y += progress
+      }
+
+    /*  if (state.x > width) {
+        state.x -= width
+      }
+      else if (state.x < 0) {
+        state.x += width
+      }*/
+      if (state.y > height) {
+        state.y -= height
+      }
+      else if (state.y < 0) {
+        state.y += height
+      }
+    }
+    
+    var firstColState = false;
+    var secondColState = false;
+    
+    function draw() {
+        
+        var firstCol = colliding(state, circle1);
+        if(firstCol == true){
+            lives -= 1;
+            circle1.x = width-100;
+            circle1.y = 100;
+        }
+        
+        var secondCol = colliding(state, circle2);
+        
+        if(secondCol == true){
+            score += 1;
+            circle2.x = width - 100;
+            circle2.y = 70;
+        }
+        
+        ctx.clearRect(0, 0, width, height)
+        
+        ctx.beginPath();
+        ctx.arc(circle1.x,circle1.y,circle1.r,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = circle1.color;
+        ctx.fill();
+        circle1.x-= 10;
+
+        if(circle1.x < 0){
+            circle1.x = width-100;
+        }
+        
+        
+        
+        ctx.beginPath();
+        ctx.arc(circle2.x,circle2.y,circle2.r,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = circle2.color;
+        ctx.fill();
+        circle2.x-= 5;
+
+        if(circle2.x < 0){
+            circle2.x = width-100;
+        }
+
+        ctx.beginPath();
+        ctx.arc(state.x - 10,state.y - 10,player.r,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = player.color;
+        ctx.fill();
+    }
+
+    function loop(timestamp) {
+      var progress = timestamp - lastRender
+
+      update(progress)
+      draw()
+      ctx.font = "30px Arial";
+      ctx.fillStyle = "white";
+      ctx.fillText("Score: " + score,10,50);
+      ctx.fillText("Lives: " + lives,10,100);
+
+      lastRender = timestamp
+      window.requestAnimationFrame(loop)
+    }
+    var lastRender = 0
+    window.requestAnimationFrame(loop)
+
+    var keyMap = {
+      68: 'right',
+      65: 'left',
+      87: 'up',
+      83: 'down'
+    }
+    function keydown(event) {
+      var key = keyMap[event.keyCode]
+      state.pressedKeys[key] = true
+    }
+    function keyup(event) {
+      var key = keyMap[event.keyCode]
+      state.pressedKeys[key] = false
+    }
+
+    window.addEventListener("keydown", keydown, false)
+    window.addEventListener("keyup", keyup, false)
+    
+    function colliding (c1, c2){
+        var result = false;
+
+        var dx = c1.x - c2.x;
+        var dy = c1.y - c2.y;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < c1.r + c2.r) {
+            result = true;
+            player.color = "red";
+        }
+        else{
+            player.color = "yellow";
+        }
+
+        return result;
+    }
+    
+</script>
+<!---<html>
 <body>
 
 <canvas id="myCanvas" width="700" height="500" style="border:1px solid #d3d3d3;">
@@ -10,11 +203,13 @@ var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
     
 var game = {score:0, lives:3, state: "play"};
+
+
+window.addEventListener("keydown", keydown, false);
+window.addEventListener("keyup", keyup, false);
     
-window.addEventListener( "keydown", doKeyDown, false);
-    
-var geo = {x:100, y:70, r:50, color:"red"};
-var geo2 = {x:100, y:100, r:50, color:"purple"};
+var circle1 = {x:100, y:70, r:50, color:"red"};
+var circle2 = {x:100, y:100, r:50, color:"purple"};
 
 var player = {x:100, y:70, r:50, color:"black"};
    
@@ -24,27 +219,27 @@ function draw(){
     ctx.clearRect(0,0,c.width,c.height);
     
     ctx.beginPath();
-    ctx.arc(geo.x,geo.y,geo.r,0,2*Math.PI);
+    ctx.arc(circle1.x,circle1.y,circle1.r,0,2*Math.PI);
     ctx.stroke();
-    ctx.fillStyle = geo.color;
+    ctx.fillStyle = circle1.color;
     ctx.fill();
-    geo.x+= 2;
+    circle1.x+= 2;
     
-    if(geo.x > c.width){
-        geo.x = 0;
+    if(circle1.x > c.width){
+        circle1.x = 0;
     }
     
     //ctx.clearRect(0,0,c.width,c.height);
     
     ctx.beginPath();
-    ctx.arc(geo2.x,geo2.y,geo2.r,0,2*Math.PI);
+    ctx.arc(circle2.x,circle2.y,circle2.r,0,2*Math.PI);
     ctx.stroke();
-    ctx.fillStyle = geo2.color;
+    ctx.fillStyle = circle2.color;
     ctx.fill();
-    geo2.x+= 1;
+    circle2.x+= 1;
     
-    if(geo2.x > c.width){
-        geo2.x = 0;
+    if(circle2.x > c.width){
+        circle2.x = 0;
     }
     
     ctx.beginPath();
@@ -58,28 +253,19 @@ function draw(){
     if(player.y > c.width){
         player.y = 0;
     }
-    window.requestAnimationFrame(draw);
+}
+    
+function loop(timestamp) {
+  var progress = timestamp - lastRender
+
+  update(progress)
+  draw()
+  
+  lastRender = timestamp
+  window.requestAnimationFrame(loop)
 }
 
-function doKeyDown(e) {
-
-   if ( e.keyCode == 87 ) {
-       player.y -= 5;
-    }
-
-    if ( e.keyCode == 83 ) {
-        player.y += 5;
-    }
-
-    if ( e.keyCode == 65 ) {
-        player.x -= 5;
-    }
-
-    if ( e.keyCode == 68 ) {
-        player.x += 5;
-    }
-
-}
+var lastRender = 0;
     
 function colliding (circle1, cirlce2){
     var result = false;
@@ -96,11 +282,11 @@ function colliding (circle1, cirlce2){
 }
 
 
-window.requestAnimationFrame(draw);
+window.requestAnimationFrame(loop);
 </script> 
 
 </body>
-</html>
+</html>--->
 <!---<div id="cr-stage"></div>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crafty/0.5.4/crafty-min.js"></script>
