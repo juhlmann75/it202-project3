@@ -163,7 +163,9 @@
       lastRender = timestamp
        
       if(lives == 0){
-          console.log("dead");
+          ctx.font = "100px Arial";
+          ctx.fillStyle = "red";
+          ctx.fillText("Game Over!",(width/2)-200,(height/2));
       }
       else{
          window.requestAnimationFrame(loop) 
