@@ -8,10 +8,11 @@
             }
 
             canvas {
-              background: #000;
+              background-image: url("https://i.pinimg.com/originals/ef/48/d2/ef48d217dc8e23a49277afc4dcf403c3.png");
               height: 100%;
               width: 100%;
-              display: block
+              display: block;
+              background-size: cover;
             }
         </style>
     </head>
@@ -24,6 +25,16 @@
 <script>
     var canvas = document.getElementById("canvas")
     var ctx = canvas.getContext("2d")
+    
+    var img1 = new Image();
+    img1.src = "http://clipart-library.com/img/1653748.png";
+    
+    var img2 = new Image();
+    img2.src = "http://clipart-library.com/images/gieERz7zT.png";
+    
+    var pimg = new Image();
+    pimg.src = "http://cliparts.co/cliparts/5cR/KXe/5cRKXe9ca.png";
+    
     var lives = 3;
     var score = 0;
     var level = 1;
@@ -117,8 +128,12 @@
         ctx.beginPath();
         ctx.arc(circle1.x,circle1.y,circle1.r,0,2*Math.PI);
         ctx.stroke();
-        ctx.fillStyle = circle1.color;
-        ctx.fill();
+       // ctx.fillStyle = circle1.color;
+        //ctx.fill();
+        
+        ctx.closePath();
+        ctx.drawImage(img2, circle1.x - 50, circle1.y - 50, circle1.r+50, circle1.r+50);
+        
         circle1.x-= 10 + speedUp;
 
         if(circle1.x < 0){
@@ -131,8 +146,12 @@
         ctx.beginPath();
         ctx.arc(circle2.x,circle2.y,circle2.r,0,2*Math.PI);
         ctx.stroke();
-        ctx.fillStyle = circle2.color;
-        ctx.fill();
+        //ctx.fillStyle = circle2.color;
+        //ctx.fill();
+        
+        ctx.closePath();
+        ctx.drawImage(img1, circle2.x - 50, circle2.y - 50, circle2.r+50, circle2.r+50);
+        
         circle2.x-= 7 + speedUp;
 
         if(circle2.x < 0){
@@ -145,8 +164,10 @@
         ctx.beginPath();
         ctx.arc(state.x - 10,state.y - 10,player.r,0,2*Math.PI);
         ctx.stroke();
-        ctx.fillStyle = player.color;
-        ctx.fill();
+        //ctx.fillStyle = player.color;
+        //ctx.fill();
+        ctx.closePath();
+        ctx.drawImage(pimg, state.x - 60, state.y - 60, player.r+60, player.r+60);
     }
 
     function loop(timestamp) {
@@ -155,7 +176,7 @@
       update(progress)
       draw()
       ctx.font = "30px Arial";
-      ctx.fillStyle = "white";
+      ctx.fillStyle = "black";
       ctx.fillText("Lives: " + lives,10,50);
       ctx.fillText("Score: " + score,10,100);
       ctx.fillText("Level: " + level,10,150);
