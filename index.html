@@ -26,6 +26,7 @@
     var ctx = canvas.getContext("2d")
     var lives = 3;
     var score = 0;
+    var level = 1;
     var width
     var height
 
@@ -104,7 +105,8 @@
         
         if(secondCol == true){
            
-            score += 1;
+            score += 10 * level;
+            level++;
             circle2.x = width - 100;
             circle2.y = Math.floor(Math.random() * height);
             speedUp += 2;
@@ -131,12 +133,13 @@
         ctx.stroke();
         ctx.fillStyle = circle2.color;
         ctx.fill();
-        circle2.x-= 5 + speedUp;
+        circle2.x-= 7 + speedUp;
 
         if(circle2.x < 0){
             circle2.x = width-100;
             circle2.y = Math.floor(Math.random() * height);
             speedUp += 2;
+            level++;
         }
 
         ctx.beginPath();
@@ -153,8 +156,9 @@
       draw()
       ctx.font = "30px Arial";
       ctx.fillStyle = "white";
-      ctx.fillText("Score: " + score,10,50);
-      ctx.fillText("Lives: " + lives,10,100);
+      ctx.fillText("Lives: " + lives,10,50);
+      ctx.fillText("Score: " + score,10,100);
+      ctx.fillText("Level: " + level,10,150);
 
       lastRender = timestamp
        
@@ -196,196 +200,10 @@
         
         if (distance < c1.r + c2.r) {
             result = true;
-            player.color = "red";
-        }
-        else{
-            player.color = "yellow";
         }
 
         return result;
     }
     
 </script>
-<!---<html>
-<body>
 
-<canvas id="myCanvas" width="700" height="500" style="border:1px solid #d3d3d3;">
-Your browser does not support the HTML5 canvas tag.</canvas>
-
-<script>
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-    
-var game = {score:0, lives:3, state: "play"};
-
-
-window.addEventListener("keydown", keydown, false);
-window.addEventListener("keyup", keyup, false);
-    
-var circle1 = {x:100, y:70, r:50, color:"red"};
-var circle2 = {x:100, y:100, r:50, color:"purple"};
-
-var player = {x:100, y:70, r:50, color:"black"};
-   
-    
-function draw(){
-    
-    ctx.clearRect(0,0,c.width,c.height);
-    
-    ctx.beginPath();
-    ctx.arc(circle1.x,circle1.y,circle1.r,0,2*Math.PI);
-    ctx.stroke();
-    ctx.fillStyle = circle1.color;
-    ctx.fill();
-    circle1.x+= 2;
-    
-    if(circle1.x > c.width){
-        circle1.x = 0;
-    }
-    
-    //ctx.clearRect(0,0,c.width,c.height);
-    
-    ctx.beginPath();
-    ctx.arc(circle2.x,circle2.y,circle2.r,0,2*Math.PI);
-    ctx.stroke();
-    ctx.fillStyle = circle2.color;
-    ctx.fill();
-    circle2.x+= 1;
-    
-    if(circle2.x > c.width){
-        circle2.x = 0;
-    }
-    
-    ctx.beginPath();
-    ctx.arc(player.x,player.y,player.r,0,2*Math.PI);
-    ctx.stroke();
-    ctx.fillStyle = player.color;
-    ctx.fill();
-    if(player.x > c.width){
-        player.x = 0;
-    }
-    if(player.y > c.width){
-        player.y = 0;
-    }
-}
-    
-function loop(timestamp) {
-  var progress = timestamp - lastRender
-
-  update(progress)
-  draw()
-  
-  lastRender = timestamp
-  window.requestAnimationFrame(loop)
-}
-
-var lastRender = 0;
-    
-function colliding (circle1, cirlce2){
-    var result = false;
-    
-    var dx = circle1.x - circle2.x;
-    var dy = circle1.y - circle2.y;
-    var distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance < circle1.r + circle2.r) {
-        result = true;
-    }
-    
-    return result;
-}
-
-
-window.requestAnimationFrame(loop);
-</script> 
-
-</body>
-</html>--->
-<!---<div id="cr-stage"></div>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crafty/0.5.4/crafty-min.js"></script>
-<style>
-
-#cr-stage {
-    position: static !important;
-    height: 200px !important;
-}
-</style>
-
-<script>
-var arena = {x:600, y:500}
-Crafty.init(arena.x, arena.y);
-var score = 0;
-
-var dim1 = {x: 5, y: 5}
-var dim2 = {x: 20, y: 20}
-var ctx = Crafty.canvas.context;
-
-Crafty.background('#FFFFFF url(http://www.kodymccarthy.com/wp-content/uploads/2014/08/space_sample.png) no-repeat center center');
-Crafty.stage.elem.style.backgroundSize = "fill";
-
-
-
-Crafty.c("Circle", {
-   circle: function(radius, color) {
-        this.radius = radius;
-        this.w = this.h = radius * 2;
-        this.color = color || "#000000";
-        this.bind("Move", Crafty.DrawManager.drawAll);
-        return this;
-   },
-    
-   draw: function() {
-       var ctx = Crafty.canvas.context;
-       
-       ctx.font = "20px Arial";
-       ctx.fillText("Score: " + score,10,50);
-       ctx.save();
-       ctx.fillStyle = this.color;
-       ctx.beginPath();
-       ctx.arc(
-           this.x + this.radius,
-           this.y + this.radius,
-           this.radius,
-           0,
-           Math.PI * 2
-       );
-       
-       ctx.closePath();
-       ctx.fill();
-       ctx.restore();
-    }
-});
-
-var circle1 = Crafty.e("2D, Canvas, Circle").attr(dim1).circle(30, "red");
-
-var circle2 = Crafty.e("2D, Canvas, Circle, Fourway").fourway(2).attr(dim2).circle(40, "blue");
-
-circle1.bind("EnterFrame", function(){
-   circle1.x+=2; 
-   if(circle1.x > arena.x){
-       circle1.x = 0;
-   }
-    
-});    
-    
-circle2.bind("EnterFrame", function () {
-    var dx = (circle1.x + circle1.radius) - (circle2.x + circle2.radius);
-    var dy = (circle1.y + circle1.radius) - (circle2.y + circle2.radius);
-    var distance = Math.sqrt(dx * dx + dy * dy);
-    var ctx = Crafty.canvas.context;
-    this.fourway(5);
-    if (distance < circle1.radius + circle2.radius) {
-        // collision detected!
-        score++;
-        ctx.fillText("Score: " + score,10,50);
-    } else {
-        // no collision
-        this.color = "blue"; 
-    }
-});
-
-
-
-</script>
---->
